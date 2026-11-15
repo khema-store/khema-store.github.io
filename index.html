@@ -75,14 +75,18 @@ footer b{color:#e2cc6b}
 
   <a class="btn primary" id="wa" target="_blank" rel="noopener">
     <span class="ic"><img src="icons/WhatsApp.svg" alt=""></span><span>كلمنا على واتساب</span><span class="arrow">‹</span></a>
-  <a class="btn" id="call">
-    <span class="ic"><img src="icons/phonecall.svg" alt=""></span><span>اتصل بينا<small class="ltr" id="phoneTxt"></small></span><span class="arrow">‹</span></a>
+  <div id="calls"></div>
 
   <div class="sec">تابعنا</div>
   <a class="btn" id="fb" target="_blank" rel="noopener"><span class="ic"><img src="icons/facebook.svg" alt=""></span>فيسبوك<span class="arrow">‹</span></a>
   <a class="btn" id="tt" target="_blank" rel="noopener" hidden><span class="ic"><img src="icons/Tiktok.svg" alt=""></span>تيك توك<span class="arrow">‹</span></a>
 
   <div class="sec">الدفع</div>
+<!--  <a class="btn pay" id="vcash" role="button">
+    <span class="ic"><img src="icons/vodafone.svg" alt=""></span><span>فودافون كاش: اضغط لنسخ الرقم<small class="ltr" id="vcashNum"></small></span><span class="arrow">‹</span></a> -->
+  <a class="btn pay" id="vcash" role="button">
+    <span class="ic"><img src="icons/vodafone.svg" alt=""></span><span><span id="vcashTitle">فودافون كاش</span><small class="ltr" id="vcashSub"></small></span><span class="arrow">‹</span></a>
+  <button class="btn copy" id="copyVcash" type="button" hidden>نسخ رقم فودافون كاش <span class="ltr" id="vcashNumTxt"></span></button>	
   <a class="btn pay" id="pay" role="button">
     <span class="ic"><img src="icons/InstaPay.svg" alt=""></span><span><span id="payTitle">InstaPay</span><small id="paySub"></small></span><span class="arrow" id="payArrow">‹</span></a>
   <button class="btn copy" id="copyNum" type="button" hidden>نسخ رقم إنستاباي <span class="ltr" id="numTxt"></span></button>
@@ -117,13 +121,15 @@ const CONFIG = {
   pattern:  "pattern.jpg",
 
   whatsapp: "https://wa.me/201275947708",
-  phone:    "01275947708",              // رقم زرار الاتصال
+  phones:   ["01275947708", "01067115744"],              // رقم زرار الاتصال
  // instagram:"https://www.instagram.com/om_el_noor_orthodox_vestments/",
   facebook: "https://www.facebook.com/share/1DxQhsq7QA/?mibextid=wwXIfr",
  // tiktok:   "https://www.tiktok.com/@om_elnoor_vestments",                         // حط لينك تيك توك هنا، وسيبه فاضي لو مش عايزه يظهر
 
-  instapayNumber: "01275947708",        // الرقم اللي بيتنسخ
+  vodafoneNumber: "01067115744",
+  instapayNumber: "01067115744",        // الرقم اللي بيتنسخ
   instapayLink:   "https://ipn.eg/S/mina_nos/instapay/2pMDlY",                   // لينك الدفع من تطبيق إنستاباي (لو فاضي الزرار بينسخ الرقم)
+  vodafonecashLink: "http://vf.eg/vfcash?id=mt&qrId=EPmpuS",
 
   agency:   "Pro Media Marketing Agency"
 };
@@ -152,29 +158,104 @@ $('wa').href = CONFIG.whatsapp;
 $('fb').href = CONFIG.facebook;
 if (CONFIG.tiktok) { $('tt').href = CONFIG.tiktok; $('tt').hidden = false; }
 
-$('phoneTxt').textContent = CONFIG.phone;
-$('call').href = 'tel:' + CONFIG.phone.replace(/\s+/g,'').replace(/^0/, '+20');
 
-// موبايل = بيفتح الاتصال مباشرة. لو ماحصلش حاجة، بتظهر نافذة فيها الرقم وزرار اتصال ونسخ. كمبيوتر = النافذة بس
+// ---------- الاتصال ----------
 const isMobile = matchMedia('(hover: none) and (pointer: coarse)').matches || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-const telHref = $('call').href;
-function openSheet(){
-  $('sheetNum').textContent = CONFIG.phone;
-  $('sheetCall').href = telHref; $('sheetCall').hidden = !isMobile;
+const telOf = p => 'tel:' + p.replace(/\s+/g,'').replace(/^0/, '+20');
+let sheetPhone = '';
+function openSheet(p){
+  sheetPhone = p;
+  $('sheetNum').textContent = p;
+  $('sheetCall').href = telOf(p); $('sheetCall').hidden = !isMobile;
   $('sheet').hidden = false;
 }
 function closeSheet(){ $('sheet').hidden = true; }
 $('sheetBg').addEventListener('click', closeSheet);
 $('sheetClose').addEventListener('click', closeSheet);
-$('sheetCopy').addEventListener('click', async () => { await copy(CONFIG.phone); say('تم نسخ الرقم ✓'); });
-$('call').addEventListener('click', e => {
-  if (!isMobile) { e.preventDefault(); openSheet(); return; }
-  let left = false; const mark = () => { left = true; };
-  document.addEventListener('visibilitychange', mark, {once:true});
-  window.addEventListener('pagehide', mark, {once:true});
-  window.addEventListener('blur', mark, {once:true});
-  setTimeout(() => { if (!left) openSheet(); }, 900);
+$('sheetCopy').addEventListener('click', async () => { await copy(sheetPhone); say('تم نسخ الرقم ✓'); });
+
+CONFIG.phones.forEach(p => {
+  const a = document.createElement('a');
+  a.className = 'btn';
+  a.href = telOf(p);
+  a.innerHTML = '<span class="ic"><img src="icons/phonecall.svg" alt=""></span><span>اتصل بينا<small class="ltr"></small></span><span class="arrow">‹</span>';
+  a.querySelector('small').textContent = p;
+  a.addEventListener('click', e => {
+    if (!isMobile) { e.preventDefault(); openSheet(p); return; }
+    let left = false; const mark = () => { left = true; };
+    document.addEventListener('visibilitychange', mark, {once:true});
+    window.addEventListener('pagehide', mark, {once:true});
+    window.addEventListener('blur', mark, {once:true});
+    setTimeout(() => { if (!left) openSheet(p); }, 900);
+  });
+  $('calls').appendChild(a);
 });
+
+
+ // ---------- فودافون كاش ----------
+// if (CONFIG.vodafoneNumber) {
+//  $('vcashNum').textContent = CONFIG.vodafoneNumber;
+//  $('vcash').addEventListener('click', async e => {
+//    e.preventDefault(); await copy(CONFIG.vodafoneNumber);
+//    say('تم نسخ الرقم ✓ افتح فودافون كاش وحوّل');
+//  });
+//} else {
+//  $('vcash').hidden = true;
+// }
+
+// $('phoneTxt').textContent = CONFIG.phone;
+// $('call').href = 'tel:' + CONFIG.phone.replace(/\s+/g,'').replace(/^0/, '+20');
+
+// موبايل = بيفتح الاتصال مباشرة. لو ماحصلش حاجة، بتظهر نافذة فيها الرقم وزرار اتصال ونسخ. كمبيوتر = النافذة بس
+// const isMobile = matchMedia('(hover: none) and (pointer: coarse)').matches || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+// const telHref = $('call').href;
+// function openSheet(){
+  // $('sheetNum').textContent = CONFIG.phone;
+  // $('sheetCall').href = telHref; $('sheetCall').hidden = !isMobile;
+  // $('sheet').hidden = false;
+// }
+// function closeSheet(){ $('sheet').hidden = true; }
+// $('sheetBg').addEventListener('click', closeSheet);
+// $('sheetClose').addEventListener('click', closeSheet);
+// $('sheetCopy').addEventListener('click', async () => { await copy(CONFIG.phone); say('تم نسخ الرقم ✓'); });
+// $('call').addEventListener('click', e => {
+//   if (!isMobile) { e.preventDefault(); openSheet(); return; }
+//   let left = false; const mark = () => { left = true; };
+//   document.addEventListener('visibilitychange', mark, {once:true});
+//   window.addEventListener('pagehide', mark, {once:true});
+//   window.addEventListener('blur', mark, {once:true});
+//   setTimeout(() => { if (!left) openSheet(); }, 900);
+// });
+
+
+// ---------- فودافون كاش ----------
+const vc = $('vcash');
+if (CONFIG.vodafoneLink) {
+  vc.href = CONFIG.vodafoneLink; vc.target = '_blank'; vc.rel = 'noopener';
+  $('vcashTitle').textContent = 'ادفع بـ فودافون كاش';
+  $('vcashSub').className = '';
+  $('vcashSub').textContent = 'هيفتحلك التطبيق';
+  if (CONFIG.vodafoneNumber) {
+    $('vcashNumTxt').textContent = CONFIG.vodafoneNumber;
+    $('copyVcash').hidden = false;
+    $('copyVcash').addEventListener('click', async () => { await copy(CONFIG.vodafoneNumber); say('تم نسخ الرقم ✓'); });
+    if (!isMobile) {
+      vc.addEventListener('click', async e => {
+        e.preventDefault(); await copy(CONFIG.vodafoneNumber);
+        say('فودافون كاش بيشتغل من الموبايل. تم نسخ الرقم ✓');
+      });
+    }
+  }
+} else if (CONFIG.vodafoneNumber) {
+  $('vcashTitle').textContent = 'فودافون كاش: اضغط لنسخ الرقم';
+  $('vcashSub').textContent = CONFIG.vodafoneNumber;
+  vc.addEventListener('click', async e => {
+    e.preventDefault(); await copy(CONFIG.vodafoneNumber);
+    say('تم نسخ الرقم ✓ افتح فودافون كاش وحوّل');
+  });
+} else {
+  vc.hidden = true;
+}
 
 const pay = $('pay');
 if (CONFIG.instapayLink) {
