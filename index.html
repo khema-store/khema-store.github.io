@@ -99,7 +99,7 @@ footer b{color:#e2cc6b}
 <div class="sheet" id="sheet" hidden>
   <div class="sheet-bg" id="sheetBg"></div>
   <div class="sheet-box">
-    <p class="sheet-title">اتصل بينا</p>
+    <p class="sheet-title">اتصل بنا</p>
     <div class="big" id="sheetNum"></div>
     <a class="btn primary" id="sheetCall"><span class="ic"><img src="icons/phonecall.svg" alt=""></span><span>اتصال الآن</span></a>
     <button class="btn" id="sheetCopy" type="button"><span class="ic">⧉</span><span>نسخ الرقم</span></button>
@@ -129,7 +129,7 @@ const CONFIG = {
   vodafoneNumber: "01067115744",
   instapayNumber: "01067115744",        // الرقم اللي بيتنسخ
   instapayLink:   "https://ipn.eg/S/mina_nos/instapay/2pMDlY",                   // لينك الدفع من تطبيق إنستاباي (لو فاضي الزرار بينسخ الرقم)
-  vodafonecashLink: "http://vf.eg/vfcash?id=mt&qrId=EPmpuS",
+  vodafonecashLink: "https://vf.eg/vfcash?id=mt&qrId=EPmpuS",
 
   agency:   "Pro Media Marketing Agency"
 };
@@ -178,7 +178,7 @@ CONFIG.phones.forEach(p => {
   const a = document.createElement('a');
   a.className = 'btn';
   a.href = telOf(p);
-  a.innerHTML = '<span class="ic"><img src="icons/phonecall.svg" alt=""></span><span>اتصل بينا<small class="ltr"></small></span><span class="arrow">‹</span>';
+  a.innerHTML = '<span class="ic"><img src="icons/phonecall.svg" alt=""></span><span>اتصل بنا<small class="ltr"></small></span><span class="arrow">‹</span>';
   a.querySelector('small').textContent = p;
   a.addEventListener('click', e => {
     if (!isMobile) { e.preventDefault(); openSheet(p); return; }
@@ -230,8 +230,8 @@ CONFIG.phones.forEach(p => {
 
 // ---------- فودافون كاش ----------
 const vc = $('vcash');
-if (CONFIG.vodafoneLink) {
-  vc.href = CONFIG.vodafoneLink; vc.target = '_blank'; vc.rel = 'noopener';
+if (CONFIG.vodafonecashLink) {
+  vc.href = CONFIG.vodafonecashLink; vc.target = '_blank'; vc.rel = 'noopener';
   $('vcashTitle').textContent = 'ادفع بـ فودافون كاش';
   $('vcashSub').className = '';
   $('vcashSub').textContent = 'هيفتحلك التطبيق';
