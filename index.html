@@ -232,7 +232,7 @@ CONFIG.phones.forEach(p => {
 const vc = $('vcash');
 if (CONFIG.vodafonecashLink) {
   vc.href = CONFIG.vodafonecashLink; vc.target = '_blank'; vc.rel = 'noopener';
-  $('vcashTitle').textContent = 'ادفع بـ فودافون كاش';
+  // $('vcashTitle').textContent = 'ادفع بـ فودافون كاش';
   $('vcashSub').className = '';
   $('vcashSub').textContent = 'هيفتحلك التطبيق';
   if (CONFIG.vodafoneNumber) {
@@ -261,7 +261,7 @@ const pay = $('pay');
 if (CONFIG.instapayLink) {
   pay.href = CONFIG.instapayLink; pay.target = '_blank'; pay.rel = 'noopener';
   $('payTitle').textContent = 'ادفع بـ InstaPay';
-  $('paySub').textContent = 'هيفتحلك التطبيق';
+  // $('paySub').textContent = 'هيفتحلك التطبيق';
   $('numTxt').textContent = CONFIG.instapayNumber;
   $('copyNum').hidden = false;
   if (!isMobile) {
